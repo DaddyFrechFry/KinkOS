@@ -27,26 +27,42 @@ dnf5 install -y tmux
 systemctl enable podman.socket
 
 
-echo "=== KinkOS NSFW Customizations Starting ==="
+echo "=== KinkOS NSFW Customizations (Aurora/KDE) Starting ==="
 
-# Install themes + useful packages
+# Install KDE themes, tools, and fun stuff
 rpm-ostree install -y \
-    gnome-tweaks \
+    gnome-tweaks \          # still useful
     adw-gtk3-theme \
     papirus-icon-theme \
     materia-gtk-theme \
+    kvantum \
+    qt5-styleplugins \
     vlc \
     mpv \
     distrobox || true
 
-# Enable Flathub + pre-install media/browser
+# Flathub + apps
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
 flatpak install -y --system flathub \
     org.mozilla.firefox \
     org.videolan.VLC || true
 
-# Create folder for your kinky wallpapers
+# Create kinky wallpaper folder
 mkdir -p /usr/share/backgrounds/kinkos
+
+# Copy custom files (wallpapers, themes, etc.)
+cp -r /build_files/system_files/* / 2>/dev/null || true
+
+# Set default kinky wallpaper for Plasma (KDE)
+if [ -f /usr/share/backgrounds/kinkos/main.jpg ]; then
+    mkdir -p /usr/share/plasma/desktoptheme/kinkos
+    # Set wallpaper via Plasma script (works on login)
+    cat <<EOF > /usr/share/plasma/desktoptheme/kinkos/wallpaper.sh
+#!/bin/bash
+plasma-apply-wallpaper --file /usr/share/backgrounds/kinkos/main.jpg --wallpaper-mode scaled
+EOF
+    chmod +x /usr/share/plasma/desktoptheme/kinkos/wallpaper.sh
+fi
 
 echo "=== KinkOS NSFW Customizations Complete ==="
 
