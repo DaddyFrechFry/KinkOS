@@ -25,3 +25,34 @@ dnf5 install -y tmux
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
+
+
+echo "=== KinkOS NSFW Customizations Starting ==="
+
+# Install themes + useful packages
+rpm-ostree install -y \
+    gnome-tweaks \
+    adw-gtk3-theme \
+    papirus-icon-theme \
+    materia-gtk-theme \
+    vlc \
+    mpv \
+    distrobox || true
+
+# Enable Flathub + pre-install media/browser
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
+flatpak install -y --system flathub \
+    org.mozilla.firefox \
+    org.videolan.VLC || true
+
+# Create folder for your kinky wallpapers
+mkdir -p /usr/share/backgrounds/kinkos
+
+echo "=== KinkOS NSFW Customizations Complete ==="
+
+cp -r /build_files/system_files/* / 2>/dev/null || true
+
+# Set the default dark kinky wallpaper (GNOME)
+if [ -f /usr/share/backgrounds/kinkos/main.jpg ]; then
+    gsettings set org.gnome.desktop.background picture-uri-dark "file:///usr/share/backgrounds/kinkos/main.jpg" || true
+fi
